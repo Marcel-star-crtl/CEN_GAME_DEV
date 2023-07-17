@@ -3,6 +3,7 @@ import random
 import tkinter as tk
 import pygame
 from pygame import mixer
+import time
 
 # Intialize the pygame
 pygame.init()
@@ -11,32 +12,34 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("CLICK TO START")
 font = pygame.font.Font(None, 50)
-text1 = font.render("CLICK TO START", True, (255, 255, 255))
-text1_rect=text1.get_rect()
-text1_rect.centerx=screen.get_rect().centerx
-text1_rect.centery=screen.get_rect().centery
+
+play_image = pygame.image.load("play.png").convert_alpha()
+quit_image = pygame.image.load('quit.png').convert_alpha()
+restart_image = pygame.image.load('restart.png').convert_alpha()
+
+play_rect = play_image.get_rect()
+play_rect.centerx = screen.get_rect().centerx - 100
+play_rect.centery = screen.get_rect().centery
+
+quit_rect = quit_image.get_rect()
+quit_rect.centerx = screen.get_rect().centerx + 100
+quit_rect.centery = screen.get_rect().centery
+
+restart_rect = restart_image.get_rect()
+restart_rect.centerx = screen.get_rect().centerx + 100
+restart_rect.centery = screen.get_rect().centery
+
 
 #caption and icon for the first screen
 pygame.display.set_caption("Haggai's space fighter")
 icon = pygame.image.load('spaceship.png')
 pygame.display.set_icon(icon)
 background = pygame.image.load('bg3.png')
+play_bn = pygame.image.load('play.png').convert_alpha()		
+restart_bn = pygame.image.load('restart.png').convert_alpha()
+quit_bn = pygame.image.load('quit.png').convert_alpha()
 
-#loop for the first screen
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONUP:
-            mouse_pos=pygame.mouse.get_pos()
-            if text1_rect.collidepoint(mouse_pos):
-               running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # Start the game here
-            pass
-    screen.blit(background, (0, 0))
-    screen.blit(text1, (270, 300))
-
-    pygame.display.update()
+font1 = pygame.font.Font('freesansbold.ttf', 64)
 
 # create the 2nd screen for the game
 screen = pygame.display.set_mode((800, 600))
@@ -52,39 +55,6 @@ mixer.music.play(-1)
 pygame.display.set_caption("Space Invader")
 icon = pygame.image.load('spaceship.png')
 pygame.display.set_icon(icon)
-
-# Player
-playerImg = pygame.image.load('ufo.png')
-playerX = 370
-playerY = 480
-playerX_change = 0
-
-# Enemy
-enemyImg = []
-enemyX = []
-enemyY = []
-enemyX_change = []
-enemyY_change = []
-num_of_enemies = 20
-
-for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('enemy.png'))
-    enemyX.append(random.randint(0, 736))
-    enemyY.append(random.randint(50, 150))
-    enemyX_change.append(4)
-    enemyY_change.append(40)
-
-# Bullet
-
-# Ready - You can't see the bullet on the screen
-# Fire - The bullet is currently moving
-
-bulletImg = pygame.image.load('bullet.png')
-bulletX = 0
-bulletY = 480
-bulletX_change = 0
-bulletY_change = 8
-bullet_state = "ready"
 
 # Score
 
@@ -104,43 +74,107 @@ def show_score(x, y):
 
 def start_game():
     # code to start the game goes here
-    print("Starting game...")
+    #loop for the first screen
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse_pos=pygame.mouse.get_pos()
+                if play_rect.collidepoint(mouse_pos):
+                    running = False
+                elif quit_rect.collidepoint(mouse_pos):
+                    pygame.quit()
+                    quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Start the game here
+                pass
+        screen.blit(background, (0, 0))
+        screen.blit(play_image, play_rect)
+        screen.blit(quit_image, quit_rect)
+
+        pygame.display.update()
 
 root = tk.Tk()
 root.title("Click to Start Game")
 
-start_button = tk.Button(root, text="Start Game", command=start_game)
+start_button = tk.Button(root, text="Start Game", command=start_game())
 start_button.pack()
 
-def game_over_text():
-    # Clear the screen
-    screen.fill((255, 255, 255))
+# def game_over_text():
+#     # Clear the screen
+#     screen.fill((255, 255, 255))
 
-    # Render the text "Game Over"
-    font = pygame.font.Font(None, 36)
-    text = font.render("Game Over", True, (0, 0, 0))
-    text_rect = text.get_rect()
-    text_rect.centerx = screen.get_rect().centerx
-    text_rect.centery = screen.get_rect().centery
+#     # Render the text "Game Over"
+#     font = pygame.font.Font(None, 36)
+#     text = font.render("Game Over", True, (0, 0, 0))
+#     text_rect = text.get_rect()
+#     text_rect.centerx = screen.get_rect().centerx
+#     text_rect.centery = screen.get_rect().centery
 
-    # Blit the text onto the screen
-    screen.blit(text, text_rect)
+#     # Blit the text onto the screen
+#     screen.blit(text, text_rect)
 
-    # Update the screen
-    pygame.display.update()
+#     # Update the screen
+#     pygame.display.update()
+
+def game_over():
+    while True:
+        screen.fill((255, 255, 255))
+        screen.blit(background, (0, 0))
+        for i in range(3):
+            text = font1.render('Game over', True, (255, 255, 255))
+            screen.blit(text, (200, 250))
+            time.sleep(1)
+            pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+        break
+        pygame.display.update()
 
 
 
-
-
+# Player
+playerImg = pygame.image.load('ufo.png')
+playerX = 370
+playerY = 480
+playerX_change = 0
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
 
 
+# Enemy
+enemyImg = []
+enemyX = []
+enemyY = []
+enemyX_change = []
+enemyY_change = []
+num_of_enemies = 20
+
+for i in range(num_of_enemies):
+    enemyImg.append(pygame.image.load('enemy.png'))
+    enemyX.append(random.randint(0, 736))
+    enemyY.append(random.randint(50, 150))
+    enemyX_change.append(7)
+    enemyY_change.append(40)
+
 def enemy(x, y, i):
     screen.blit(enemyImg[i], (x, y))
 
+
+# Bullet
+
+# Ready - You can't see the bullet on the screen
+# Fire - The bullet is currently moving
+
+bulletImg = pygame.image.load('bullet.png')
+bulletX = 0
+bulletY = 480
+bulletX_change = 0
+bulletY_change = 8
+bullet_state = "ready"
 
 def fire_bullet(x, y):
     global bullet_state
@@ -155,7 +189,6 @@ def isCollision(enemyX, enemyY, bulletX, bulletY):
     else:
         return False
 
-
 # Game Loop
 running = True
 while running:
@@ -166,13 +199,8 @@ while running:
     screen.blit(background, (0, 0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-          running = False
-
-
-
-
-
-
+            pygame.quit()
+            sys.exit()
 
         # if keystroke is pressed check whether its right or left
         if event.type == pygame.KEYDOWN:
@@ -207,7 +235,7 @@ while running:
             for j in range(num_of_enemies):
                 enemyY[j] = 2000
                 playerY=2000
-            game_over_text()
+            game_over()
             break
 
         enemyX[i] += enemyX_change[i]
